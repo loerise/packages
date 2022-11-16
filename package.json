@@ -7,10 +7,10 @@
     "prepare": "husky install",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "author": "Lester Lau",
   "license": "MIT",
   "devDependencies": {
+    "@loerise/eslint-config": "workspace:^",
     "eslint": "^8.26.0",
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
