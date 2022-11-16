@@ -2,32 +2,33 @@ declare type AsyncStateRef = <T>(nextState: T) => Promise<T>;
 declare type Index = <T>(initialState: T) => [T, AsyncStateRef];
 declare const useAsyncState: Index;
 
-declare type FieldOriginalKey = string | string[];
+declare type RuleType = "required" | "lt" | "lte" | "gt" | "gte" | "minLength" | "maxLength" | "integer" | "decimals" | "phone" | "vin" | "licensePlate" | "pattern" | "trim";
+declare type FieldOriginalKey = number | string | (string | number)[];
 declare type FieldValue = any;
 declare type FieldValues = Record<string, FieldValue> | FieldValue[];
 declare type FieldRule = {
-    type: string;
-    message?: string;
-    value?: number;
     pattern?: RegExp;
+    type: RuleType;
+    value?: number;
+    message?: string;
 };
 declare type FieldError = {
     key: string;
-    type: string;
+    type: RuleType;
     message: string;
 };
 declare type FieldConfigs = {
-    eventName: string;
-    valueName: string;
-    valueKey: string;
-    initialValue: FieldValue;
-    placeholder: string;
-    rules: FieldRule[];
-    interceptChange: <T>(value: T) => boolean;
-    interceptValue: <T>(value: T) => T;
+    initialValue?: FieldValue;
+    placeholder?: string;
+    eventName?: string;
+    valueName?: string;
+    valueKey?: string;
+    rules?: FieldRule[];
+    interceptChange?: <T>(value: T) => boolean;
+    interceptValue?: <T>(value: T) => T;
 };
 declare type Validate = () => Promise<FieldValues>;
-declare type RegisterField = (key: FieldOriginalKey, configs: FieldConfigs) => Record<string, any>;
+declare type RegisterField = (key: FieldOriginalKey, configs?: FieldConfigs) => Record<string, any>;
 declare type GetFieldValue = (key: FieldOriginalKey) => FieldValue;
 declare type GetFieldsValue = () => FieldValues;
 declare type SetFieldValue = (key: FieldOriginalKey, value: FieldValue) => void;

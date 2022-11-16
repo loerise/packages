@@ -3,10 +3,12 @@ module.exports = {
     browser: true,
     es2021: true,
   },
+  parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaVersion: "latest",
     sourceType: "module",
   },
+  plugins: ["@typescript-eslint", "ramda"],
   extends: [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
@@ -18,8 +20,6 @@ module.exports = {
     "plugin:tailwindcss/recommended",
     "prettier",
   ],
-  parser: "@typescript-eslint/parser",
-  plugins: ["@typescript-eslint"],
   rules: {
     "@typescript-eslint/ban-ts-ignore": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
