@@ -1,7 +1,3 @@
-type AsyncStateRef = <T>(nextState: T) => Promise<T>;
-type Index = <T>(initialState: T) => [T, AsyncStateRef];
-declare const useAsyncState: Index;
-
 type RuleType = "required" | "lt" | "lte" | "gt" | "gte" | "minLength" | "maxLength" | "integer" | "decimals" | "phone" | "vin" | "licensePlate" | "pattern" | "trim";
 type FieldOriginalKey = number | string | (string | number)[];
 type FieldValue = any;
@@ -63,5 +59,9 @@ type UseVisibleProps = <T>(options?: {
     handleHide: () => void;
 };
 declare const useVisible: UseVisibleProps;
+
+type AsyncStateRef = <T>(nextState: T) => Promise<T>;
+type Index = <T>(initialState: T) => [T, AsyncStateRef];
+declare const useAsyncState: Index;
 
 export { useAsyncState, useForm, useVisible };

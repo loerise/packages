@@ -15,8 +15,9 @@
   "files": [
     "lib"
   ],
-  "main": "lib/index.js",
-  "types": "lib/types/index.ts",
+  "main": "lib/index.cjs.js",
+  "module": "lib/index.esm.js",
+  "types": "lib/index.d.ts",
   "dependencies": {
     "ramda": "^0.28.0"
   },

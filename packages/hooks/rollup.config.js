@@ -8,12 +8,34 @@ import { terser } from "rollup-plugin-terser"
 export default [
   {
     input: "src/index.ts",
+    external: ["react"],
     output: [
       {
         file: "lib/index.js",
         format: "umd",
-        name: "@loerise/hooks",
+        name: "lhook",
         sourcemap: true,
+        globals: {
+          react: "React",
+        },
+      },
+      {
+        file: "lib/index.esm.js",
+        format: "es",
+        name: "lhook",
+        sourcemap: true,
+        globals: {
+          react: "React",
+        },
+      },
+      {
+        file: "lib/index.cjs.js",
+        format: "cjs",
+        name: "lhook",
+        sourcemap: true,
+        globals: {
+          react: "React",
+        },
       },
     ],
     plugins: [ramda(), resolve(), commonjs(), typescript({ exclude: ["**/__tests__", "**/*.test.ts"] }), terser()],
@@ -24,7 +46,7 @@ export default [
   },
   {
     input: "lib/src/index.d.ts",
-    output: [{ file: "lib/types/index.ts", format: "esm" }],
+    output: [{ file: "lib/index.d.ts", format: "esm" }],
     plugins: [dts()],
   },
 ]
