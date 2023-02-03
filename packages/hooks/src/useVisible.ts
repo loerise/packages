@@ -1,7 +1,8 @@
+/* eslint-disable ramda/prefer-ramda-boolean */
 import { useCallback } from "react"
 import * as R from "ramda"
 
-import { useAsyncState } from "../useAsyncState"
+import { useAsyncState } from "./useAsyncState"
 
 type UseVisibleProps = <T>(options?: {
   initialVisible?: boolean

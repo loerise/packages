@@ -1,9 +1,9 @@
 import { useState, useRef } from "react"
 
 type AsyncStateRef = <T>(nextState: T) => Promise<T>
-type Index = <T>(initialState: T) => [T, AsyncStateRef]
+type UseAsyncState = <T>(initialState: T) => [T, AsyncStateRef]
 
-export const useAsyncState: Index = (initialState) => {
+export const useAsyncState: UseAsyncState = (initialState) => {
   const updateAsyncStateRef = useRef<AsyncStateRef>()
   const [state, updateState] = useState<any>(initialState)
 

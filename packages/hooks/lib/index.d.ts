@@ -32,7 +32,9 @@ type SetFieldsValue = (value: FieldValues) => void;
 type GetFieldError = (key: FieldOriginalKey) => FieldError["message"];
 type ResetFields = () => void;
 type UseFrom = (options?: {
-    validateTrigger?: "onChange" | "onBlur";
+    initialEventName?: "onChange" | "onBlur" | "onChangeText";
+    initialValueName?: string;
+    initialValueKey?: string;
 }) => {
     validate: Validate;
     registerField: RegisterField;
@@ -61,7 +63,7 @@ type UseVisibleProps = <T>(options?: {
 declare const useVisible: UseVisibleProps;
 
 type AsyncStateRef = <T>(nextState: T) => Promise<T>;
-type Index = <T>(initialState: T) => [T, AsyncStateRef];
-declare const useAsyncState: Index;
+type UseAsyncState = <T>(initialState: T) => [T, AsyncStateRef];
+declare const useAsyncState: UseAsyncState;
 
 export { useAsyncState, useForm, useVisible };

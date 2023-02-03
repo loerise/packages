@@ -50,7 +50,11 @@ type SetFieldsValue = (value: FieldValues) => void
 type GetFieldError = (key: FieldOriginalKey) => FieldError["message"]
 type ResetFields = () => void
 
-type UseFrom = (options?: { validateTrigger?: "onChange" | "onBlur" }) => {
+type UseFrom = (options?: {
+  initialEventName?: "onChange" | "onBlur" | "onChangeText"
+  initialValueName?: string
+  initialValueKey?: string
+}) => {
   validate: Validate
   registerField: RegisterField
   getFieldValue: GetFieldValue
@@ -63,7 +67,7 @@ type UseFrom = (options?: { validateTrigger?: "onChange" | "onBlur" }) => {
 
 export const useForm: UseFrom = (options = {}) => {
   const [, forceUpdate] = useState(0)
-  const { validateTrigger = "onChange" } = options
+  const { initialEventName = "", initialValueName = "", initialValueKey = "" } = options
 
   const initialFieldValuesRef = useRef<FieldValues>({})
   const fieldValuesRef = useRef<FieldValues>({})
@@ -73,7 +77,13 @@ export const useForm: UseFrom = (options = {}) => {
 
   // 将 key 转为数组
   const ensureArrayKey: (key: FieldOriginalKey) => FieldArrayKey = useCallback((key) => {
-    return key instanceof Array ? key : String(key).includes(".") ? String(key).split(".") : [key]
+    if (isEmpty(key)) {
+      return []
+    } else if (key instanceof Array) {
+      return key
+    } else {
+      return String(key).includes(".") ? String(key).split(".") : [key]
+    }
   }, [])
   const ensureStringKey: (key: FieldOriginalKey) => string = useCallback(
     (key) => {
@@ -90,7 +100,7 @@ export const useForm: UseFrom = (options = {}) => {
     (key, value) => {
       return !isEmpty(value) ? value : isNaN(Number(ensureArrayKey(key)[0])) ? {} : []
     },
-    []
+    [ensureArrayKey]
   )
   const getFieldValue: GetFieldValue = useCallback(
     (key) => {
@@ -323,9 +333,9 @@ export const useForm: UseFrom = (options = {}) => {
   const registerField: RegisterField = useCallback(
     (key, configs = {}) => {
       const {
-        eventName = "onChange",
-        valueName = "value",
-        valueKey = "detail",
+        eventName = R.defaultTo("onChangeText", initialEventName),
+        valueName = R.defaultTo("value", initialValueName),
+        valueKey = R.defaultTo("detail", initialValueKey),
         initialValue,
         placeholder,
         rules = [],
@@ -343,7 +353,7 @@ export const useForm: UseFrom = (options = {}) => {
           R.assocPath(ensureArrayKey(key), computedInitialValue)
         )
       }
-      const handleChange = (event) => {
+      const handleChange = (event: unknown) => {
         const interceptChangeResult =
           typeof interceptChange === "function" ? interceptChange(fieldValuesRef.current) : true
         if (!interceptChangeResult) return
@@ -351,7 +361,7 @@ export const useForm: UseFrom = (options = {}) => {
         const computedValue = isEmpty(ensureArrayKey(valueKey)) ? event : R.path(ensureArrayKey(valueKey), event)
         const interceptedValue = typeof interceptValue === "function" ? interceptValue(computedValue) : computedValue
 
-        if (validateTrigger === "onChange") validateField(key, interceptedValue)
+        if (initialEventName !== "onBlur") validateField(key, interceptedValue)
         setFieldValue(key, interceptedValue)
       }
 
@@ -360,7 +370,17 @@ export const useForm: UseFrom = (options = {}) => {
         [eventName]: handleChange,
       }
     },
-    [ensureArrayKey, getFieldValue, setFieldKeys, setFieldRules, setFieldValue, validateField, validateTrigger]
+    [
+      ensureArrayKey,
+      getFieldValue,
+      initialEventName,
+      initialValueKey,
+      initialValueName,
+      setFieldKeys,
+      setFieldRules,
+      setFieldValue,
+      validateField,
+    ]
   )
 
   return {
