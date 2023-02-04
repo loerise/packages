@@ -3,7 +3,9 @@ import * as R from "ramda"
 
 const isEmpty = R.compose(R.either(R.isNil, R.isEmpty))
 const emptyTo = <T, U>(defaultValue: T, value: U | null | undefined): U | T => {
-  return null === value || undefined === value ? defaultValue : value
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  return isEmpty(value) ? defaultValue : value
 }
 
 type RuleType =
