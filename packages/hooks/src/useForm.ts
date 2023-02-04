@@ -2,6 +2,9 @@ import { useCallback, useRef, useState } from "react"
 import * as R from "ramda"
 
 const isEmpty = R.compose(R.either(R.isNil, R.isEmpty))
+const emptyTo = <T, U>(defaultValue: T, value: U | null | undefined): U | T => {
+  return null === value || undefined === value ? defaultValue : value
+}
 
 type RuleType =
   | "required"
@@ -333,9 +336,9 @@ export const useForm: UseFrom = (options = {}) => {
   const registerField: RegisterField = useCallback(
     (key, configs = {}) => {
       const {
-        eventName = R.defaultTo("onChangeText", initialEventName),
-        valueName = R.defaultTo("value", initialValueName),
-        valueKey = R.defaultTo("detail", initialValueKey),
+        eventName = emptyTo("onChangeText", initialEventName),
+        valueName = emptyTo("value", initialValueName),
+        valueKey = emptyTo("detail", initialValueKey),
         initialValue,
         placeholder,
         rules = [],
