@@ -6,17 +6,17 @@
   "author": "Lester Lau",
   "license": "MIT",
   "dependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.42.0",
-    "@typescript-eslint/parser": "^5.42.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-import": "^2.26.0",
+    "@typescript-eslint/eslint-plugin": "^5.52.0",
+    "@typescript-eslint/parser": "^5.52.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-ramda": "^2.5.1",
-    "eslint-plugin-react": "^7.31.10",
+    "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-directives": "^3.0.0",
-    "eslint-plugin-tailwindcss": "^3.6.2"
+    "eslint-plugin-tailwindcss": "^3.8.3"
   },
   "devDependencies": {
-    "eslint": "^8.26.0"
+    "eslint": "^8.34.0"
   },
   "peerDependencies": {
     "eslint": ">=8"
