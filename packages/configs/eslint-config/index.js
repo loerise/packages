@@ -36,17 +36,55 @@ module.exports = {
     "import/order": [
       "error",
       {
-        groups: [["builtin", "external"], ["index", "sibling", "parent"], "object", "type"],
+        groups: [["builtin", "external"], ["sibling", "index", "parent"], "object", "type", "unknown"],
         pathGroups: [
           {
-            pattern: "@app/**",
-            group: "external",
-            position: "after",
+            pattern: "react",
+            group: "builtin",
+            position: "before",
+          },
+          {
+            pattern: "react-dom",
+            group: "builtin",
+            position: "before",
+          },
+          {
+            pattern: "react-native",
+            group: "builtin",
+            position: "before",
+          },
+          {
+            pattern: "@features",
+            group: "sibling",
+            position: "before",
+          },
+          {
+            pattern: "@components",
+            group: "sibling",
+            position: "before",
+          },
+          {
+            pattern: "@hooks",
+            group: "sibling",
+            position: "before",
+          },
+          {
+            pattern: "@libs",
+            group: "sibling",
+            position: "before",
+          },
+          {
+            pattern: "@shared",
+            group: "sibling",
+            position: "before",
+          },
+          {
+            pattern: "@/**",
+            group: "sibling",
+            position: "before",
           },
         ],
-        alphabetize: {
-          order: "ignore",
-        },
+        distinctGroup: false,
         "newlines-between": "always",
       },
     ],
