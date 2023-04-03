@@ -62,7 +62,17 @@ module.exports = {
                 position: "before",
               },
               {
+                pattern: "@features/**",
+                group: "sibling",
+                position: "before",
+              },
+              {
                 pattern: "@components",
+                group: "sibling",
+                position: "before",
+              },
+              {
+                pattern: "@components/**",
                 group: "sibling",
                 position: "before",
               },
@@ -72,12 +82,27 @@ module.exports = {
                 position: "before",
               },
               {
+                pattern: "@hooks/**",
+                group: "sibling",
+                position: "before",
+              },
+              {
                 pattern: "@libs",
                 group: "sibling",
                 position: "before",
               },
               {
+                pattern: "@libs/**",
+                group: "sibling",
+                position: "before",
+              },
+              {
                 pattern: "@shared",
+                group: "sibling",
+                position: "before",
+              },
+              {
+                pattern: "@shared/**",
                 group: "sibling",
                 position: "before",
               },
