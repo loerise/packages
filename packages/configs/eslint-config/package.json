@@ -17,6 +17,7 @@
   },
   "peerDependencies": {
     "eslint": ">=8",
-    "typescript": ">=4"
+    "typescript": ">=4",
+    "tailwindcss": ">=3"
   }
 }
