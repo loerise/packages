@@ -1,14 +1,4 @@
 module.exports = {
-  env: {
-    browser: true,
-    es2021: true,
-  },
-  parser: "@typescript-eslint/parser",
-  parserOptions: {
-    ecmaVersion: "latest",
-    sourceType: "module",
-  },
-  plugins: ["@typescript-eslint", "ramda"],
   extends: [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
@@ -20,10 +10,21 @@ module.exports = {
     "plugin:tailwindcss/recommended",
     "prettier",
   ],
+  plugins: ["@typescript-eslint", "ramda", "react-hooks-order"],
+  parser: "@typescript-eslint/parser",
+  parserOptions: {
+    ecmaVersion: "latest",
+    sourceType: "module",
+  },
+  env: {
+    browser: true,
+    es2021: true,
+  },
   overrides: [
     {
       files: ["**/*.js?(x)", "**/*.ts?(x)"],
       rules: {
+        "@typescript-eslint/ban-ts-comment": "off",
         "@typescript-eslint/ban-ts-ignore": "off",
         "@typescript-eslint/explicit-function-return-type": "off",
         "@typescript-eslint/no-empty-function": "off",
@@ -39,89 +40,101 @@ module.exports = {
         "import/order": [
           "error",
           {
+            distinctGroup: false,
             groups: [["builtin", "external"], ["sibling", "index", "parent"], "object", "type", "unknown"],
+            "newlines-between": "always",
             pathGroups: [
               {
+                group: "builtin",
                 pattern: "react",
-                group: "builtin",
                 position: "before",
               },
               {
+                group: "builtin",
                 pattern: "react-dom",
-                group: "builtin",
                 position: "before",
               },
               {
+                group: "builtin",
                 pattern: "react-native",
-                group: "builtin",
                 position: "before",
               },
               {
+                group: "sibling",
                 pattern: "@features",
-                group: "sibling",
                 position: "before",
               },
               {
+                group: "sibling",
                 pattern: "@features/**",
-                group: "sibling",
                 position: "before",
               },
               {
+                group: "sibling",
                 pattern: "@components",
-                group: "sibling",
                 position: "before",
               },
               {
+                group: "sibling",
                 pattern: "@components/**",
-                group: "sibling",
                 position: "before",
               },
               {
+                group: "sibling",
                 pattern: "@hooks",
-                group: "sibling",
                 position: "before",
               },
               {
+                group: "sibling",
                 pattern: "@hooks/**",
-                group: "sibling",
                 position: "before",
               },
               {
+                group: "sibling",
                 pattern: "@libs",
-                group: "sibling",
                 position: "before",
               },
               {
+                group: "sibling",
                 pattern: "@libs/**",
-                group: "sibling",
                 position: "before",
               },
               {
+                group: "sibling",
                 pattern: "@shared",
-                group: "sibling",
                 position: "before",
               },
               {
+                group: "sibling",
                 pattern: "@shared/**",
-                group: "sibling",
                 position: "before",
               },
               {
-                pattern: "@/**",
                 group: "sibling",
+                pattern: "@/**",
                 position: "before",
               },
             ],
             pathGroupsExcludedImportTypes: [],
-            distinctGroup: false,
-            "newlines-between": "always",
           },
         ],
         "no-console": "warn",
         "no-undef": "off",
         "react-directives/no-undef": "off",
         "react/display-name": "off",
+        "react/jsx-curly-brace-presence": "error",
         "react/prop-types": "off",
+        "sort-imports": [
+          "error",
+          {
+            ignoreCase: true,
+            ignoreDeclarationSort: true,
+            ignoreMemberSort: false,
+          },
+        ],
+        "tailwindcss/classnames-order": "warn",
+        "tailwindcss/enforces-negative-arbitrary-values": "error",
+        "tailwindcss/no-contradicting-classname": "error",
         "tailwindcss/no-custom-classname": "off",
       },
     },

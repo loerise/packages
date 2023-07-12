@@ -1,6 +1,6 @@
 {
   "name": "@loerise/eslint-config",
-  "version": "1.0.10",
+  "version": "1.0.12",
   "description": "the eslint config by loerise",
   "main": "index.js",
   "author": "Lester Lau",
@@ -11,13 +11,14 @@
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-ramda": "^2.5.1",
-    "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-directives": "^3.0.0",
+    "eslint-plugin-react-hooks-order": "^0.1.2",
+    "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-tailwindcss": "^3.8.3"
   },
   "peerDependencies": {
     "eslint": ">=8",
-    "typescript": ">=4",
-    "tailwindcss": ">=3"
+    "tailwindcss": ">=3",
+    "typescript": ">=4"
   }
 }
