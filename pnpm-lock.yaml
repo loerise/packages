@@ -59,10 +59,6 @@ importers:
       typescript:
         specifier: '>=4'
         version: 5.1.6
-    devDependencies:
-      eslint-plugin-react-hooks-order:
-        specifier: ^0.1.2
-        version: 0.1.2
 
   packages/hooks:
     dependencies:
@@ -1863,13 +1859,6 @@ packages:
       esutils: 2.0.3
     optionalDependencies:
       source-map: 0.6.1
-    dev: true
-
-  /eslint-plugin-react-hooks-order@0.1.2:
-    resolution: {integrity: sha512-ttsFJEyEkqfX0ZbEfdJiURvfkSzsL6/spWN6dUmHCVbAG5Ed5viR8yf35Lb6V4uT8QvB0nEVio3dlai/Oehocw==}
-    engines: {node: '>=0.10.0'}
-    dependencies:
-      requireindex: 1.2.0
     dev: true
 
   /eslint-scope@7.2.0:
@@ -3929,11 +3918,6 @@ packages:
   /require-directory@2.1.1:
     resolution: {integrity: sha512-fGxEI7+wsG9xrvdjsrlmL22OMTTiHRwAMroiEeMgq8gzoLC/PQr7RsRDSTLUg/bZAZtF+TVIkHc6/4RIKrui+Q==}
     engines: {node: '>=0.10.0'}
-    dev: true
-
-  /requireindex@1.2.0:
-    resolution: {integrity: sha512-L9jEkOi3ASd9PYit2cwRfyppc9NoABujTP8/5gFcbERmo5jUoAKovIC3fsF17pkTnGsrByysqX+Kxd2OTNI1ww==}
-    engines: {node: '>=0.10.5'}
     dev: true
 
   /requires-port@1.0.0:

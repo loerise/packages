@@ -10,7 +10,7 @@ module.exports = {
     "plugin:tailwindcss/recommended",
     "prettier",
   ],
-  plugins: ["@typescript-eslint", "ramda", "react-hooks-order"],
+  plugins: ["@typescript-eslint", "ramda"],
   parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaVersion: "latest",
