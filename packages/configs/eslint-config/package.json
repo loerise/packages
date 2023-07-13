@@ -1,6 +1,6 @@
 {
   "name": "@loerise/eslint-config",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "the eslint config by loerise",
   "main": "index.js",
   "author": "Lester Lau",
@@ -13,6 +13,7 @@
     "eslint-plugin-ramda": "^2.5.1",
     "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-directives": "^3.0.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-tailwindcss": "^3.8.3"
   },
   "peerDependencies": {

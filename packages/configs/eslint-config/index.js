@@ -6,6 +6,7 @@ module.exports = {
     "plugin:import/typescript",
     "plugin:ramda/recommended",
     "plugin:react-directives/recommended",
+    "plugin:react-hooks/recommended",
     "plugin:react/recommended",
     "plugin:tailwindcss/recommended",
     "prettier",
