@@ -1,13 +1,6 @@
 import { useCallback, useRef, useState } from "react"
 import * as R from "ramda"
 
-const isEmpty = R.compose(R.either(R.isNil, R.isEmpty))
-const emptyTo = <T, U>(defaultValue: T, value: U | null | undefined): U | T => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  return isEmpty(value) ? defaultValue : value
-}
-
 type RuleType =
   | "required"
   | "lt"
@@ -56,7 +49,7 @@ type GetFieldError = (key: FieldKeyOriginal) => FieldError["message"]
 type ResetFields = () => void
 
 type UseFrom = (options?: {
-  initialEventName?: "onChange" | "onBlur" | "onChangeText"
+  initialEventName?: "onChange" | "onInput" | "onChangeText" | string
   initialValueName?: string
   initialValueKey?: string
 }) => {
@@ -70,9 +63,12 @@ type UseFrom = (options?: {
   resetFields: ResetFields
 }
 
+const isEmpty = R.compose(R.either(R.isNil, R.isEmpty))
+
 export const useForm: UseFrom = (options = {}) => {
   const [, forceUpdate] = useState(0)
-  const { initialEventName = "", initialValueName = "", initialValueKey = "" } = options
+
+  const { initialEventName = "onChange", initialValueName = "value", initialValueKey = "detail" } = options
 
   const initialFieldValuesRef = useRef<FieldValues>({})
   const fieldValuesRef = useRef<FieldValues>({})
@@ -97,9 +93,9 @@ export const useForm: UseFrom = (options = {}) => {
     [ensureArrayKey]
   )
   /*
-   * fieldValuesRef的初始数据类型由key来判断
-   * 1、key是数组且下标0的数据是数字，fieldValuesRef是数组类型
-   * 2、其他情况fieldValuesRef是对象类型
+   * fieldValuesRef 的初始数据类型由 key 来判断
+   * 1、key 是数组且下标 0 的数据是数字，fieldValuesRef 是数组类型
+   * 2、其他情况 fieldValuesRef 是对象类型
    */
   const ensureValueType: (key: FieldKeyOriginal, value: any) => Record<string, unknown> | [] = useCallback(
     (key, value) => {
@@ -338,15 +334,16 @@ export const useForm: UseFrom = (options = {}) => {
   const registerField: RegisterField = useCallback(
     (key, configs = {}) => {
       const {
-        eventName = emptyTo("onChangeText", initialEventName),
-        valueName = emptyTo("value", initialValueName),
-        valueKey = emptyTo("detail", initialValueKey),
+        eventName = initialEventName,
+        valueName = initialValueName,
+        valueKey = initialValueKey,
         initialValue,
         placeholder,
         rules = [],
         interceptChange,
         interceptValue,
       } = configs
+
       const computedInitialValue = R.defaultTo(null, initialValue)
 
       if (getFieldValue(key) === undefined) {

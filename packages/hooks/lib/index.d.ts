@@ -1,19 +1,32 @@
-declare type RuleType = "required" | "lt" | "lte" | "gt" | "gte" | "minLength" | "maxLength" | "integer" | "decimals" | "phone" | "vin" | "licensePlate" | "pattern" | "trim";
-declare type FieldKeyOriginal = number | string | (string | number)[];
-declare type FieldValue = any;
-declare type FieldValues = Record<string, FieldValue> | FieldValue[];
-declare type FieldRule = {
+import { Dispatch, SetStateAction } from 'react';
+
+interface UseBooleanOutput {
+    value: boolean;
+    setValue: Dispatch<SetStateAction<boolean>>;
+    setTrue: () => void;
+    setFalse: () => void;
+    toggle: () => void;
+}
+declare const useBoolean: (defaultValue?: boolean) => UseBooleanOutput;
+
+declare const useDebounce: <T>(value?: T | undefined, delay?: number) => T | undefined;
+
+type RuleType = "required" | "lt" | "lte" | "gt" | "gte" | "minLength" | "maxLength" | "integer" | "decimals" | "phone" | "vin" | "licensePlate" | "pattern" | "trim";
+type FieldKeyOriginal = number | string | (string | number)[];
+type FieldValue = any;
+type FieldValues = Record<string, FieldValue> | FieldValue[];
+type FieldRule = {
     pattern?: RegExp;
     type: RuleType;
     value?: number;
     message?: string;
 };
-declare type FieldError = {
+type FieldError = {
     key: string;
     type: RuleType;
     message: string;
 };
-declare type FieldConfigs = {
+type FieldConfigs = {
     initialValue?: FieldValue;
     placeholder?: string;
     eventName?: string;
@@ -23,16 +36,16 @@ declare type FieldConfigs = {
     interceptChange?: <T>(value: T) => boolean;
     interceptValue?: <T>(value: T) => T;
 };
-declare type Validate = () => Promise<FieldValues>;
-declare type RegisterField = (key: FieldKeyOriginal, configs?: FieldConfigs) => Record<string, any>;
-declare type GetFieldValue = (key: FieldKeyOriginal) => FieldValue;
-declare type GetFieldsValue = () => FieldValues;
-declare type SetFieldValue = (key: FieldKeyOriginal, value: FieldValue) => void;
-declare type SetFieldsValue = (value: FieldValues) => void;
-declare type GetFieldError = (key: FieldKeyOriginal) => FieldError["message"];
-declare type ResetFields = () => void;
-declare type UseFrom = (options?: {
-    initialEventName?: "onChange" | "onBlur" | "onChangeText";
+type Validate = () => Promise<FieldValues>;
+type RegisterField = (key: FieldKeyOriginal, configs?: FieldConfigs) => Record<string, any>;
+type GetFieldValue = (key: FieldKeyOriginal) => FieldValue;
+type GetFieldsValue = () => FieldValues;
+type SetFieldValue = (key: FieldKeyOriginal, value: FieldValue) => void;
+type SetFieldsValue = (value: FieldValues) => void;
+type GetFieldError = (key: FieldKeyOriginal) => FieldError["message"];
+type ResetFields = () => void;
+type UseFrom = (options?: {
+    initialEventName?: "onChange" | "onInput" | "onChangeText" | string;
     initialValueName?: string;
     initialValueKey?: string;
 }) => {
@@ -47,23 +60,25 @@ declare type UseFrom = (options?: {
 };
 declare const useForm: UseFrom;
 
-declare type UseVisibleProps = <T>(options?: {
-    initialVisible?: boolean;
+declare const usePrevious: <T>(state: T) => T | undefined;
+
+type UseStatePromise = <T = any>(initialState: T) => [state: T, updateStateCallback: (nextState: T) => Promise<SetStateAction<T>>];
+declare const useStatePromise: UseStatePromise;
+
+type UseToggleProps = <T = any>(options?: {
+    initialState?: boolean;
     initialValue?: T | undefined;
-    beforeShow?: () => boolean;
-    beforeHide?: () => boolean;
-    afterShow?: () => void;
-    afterHide?: () => void;
+    beforeOn?: () => boolean;
+    afterOn?: () => void;
+    beforeOff?: () => boolean;
+    afterOff?: () => void;
 }) => {
-    visible: boolean;
+    state: boolean;
     value: T | undefined;
-    handleShow: (nextValue?: unknown) => void;
-    handleHide: () => void;
+    handleOn: (nextValue?: unknown) => void;
+    handleOff: () => void;
+    handleToggle: (nextValue?: unknown) => void;
 };
-declare const useVisible: UseVisibleProps;
+declare const useToggle: UseToggleProps;
 
-declare type AsyncStateRef = <T>(nextState: T) => Promise<T>;
-declare type UseAsyncState = <T>(initialState: T) => [T, AsyncStateRef];
-declare const useAsyncState: UseAsyncState;
-
-export { useAsyncState, useForm, useVisible };
+export { useBoolean, useDebounce, useForm, usePrevious, useStatePromise, useToggle };
