@@ -1,7 +1,10 @@
 import { useEffect, useRef } from "react"
 
-export const usePrevious = <T>(state: T): T | undefined => {
-  const ref = useRef<T>()
+interface UsePrevious {
+  <T>(state: T): T | undefined
+}
+export const usePrevious: UsePrevious = (state) => {
+  const ref = useRef<any>()
 
   useEffect(() => {
     ref.current = state

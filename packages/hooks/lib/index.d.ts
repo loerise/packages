@@ -30,6 +30,7 @@ type FieldConfigs = {
     initialValue?: FieldValue;
     placeholder?: string;
     eventName?: string;
+    destroyEventName?: string;
     valueName?: string;
     valueKey?: string;
     rules?: FieldRule[];
@@ -37,6 +38,7 @@ type FieldConfigs = {
     interceptValue?: <T>(value: T) => T;
 };
 type Validate = () => Promise<FieldValues>;
+type UnregisterField = (key: FieldKeyOriginal) => void;
 type RegisterField = (key: FieldKeyOriginal, configs?: FieldConfigs) => Record<string, any>;
 type GetFieldValue = (key: FieldKeyOriginal) => FieldValue;
 type GetFieldsValue = () => FieldValues;
@@ -46,21 +48,26 @@ type GetFieldError = (key: FieldKeyOriginal) => FieldError["message"];
 type ResetFields = () => void;
 type UseFrom = (options?: {
     initialEventName?: "onChange" | "onInput" | "onChangeText" | string;
+    initialDestroyEventName?: "onDestroy" | string;
     initialValueName?: string;
     initialValueKey?: string;
 }) => {
-    validate: Validate;
-    registerField: RegisterField;
-    getFieldValue: GetFieldValue;
-    getFieldsValue: GetFieldsValue;
-    setFieldValue: SetFieldValue;
-    setFieldsValue: SetFieldsValue;
     getFieldError: GetFieldError;
+    getFieldsValue: GetFieldsValue;
+    getFieldValue: GetFieldValue;
+    registerField: RegisterField;
     resetFields: ResetFields;
+    setFieldsValue: SetFieldsValue;
+    setFieldValue: SetFieldValue;
+    unregisterField: UnregisterField;
+    validate: Validate;
 };
 declare const useForm: UseFrom;
 
-declare const usePrevious: <T>(state: T) => T | undefined;
+interface UsePrevious {
+    <T>(state: T): T | undefined;
+}
+declare const usePrevious: UsePrevious;
 
 type UseStatePromise = <T = any>(initialState: T) => [state: T, updateStateCallback: (nextState: T) => Promise<SetStateAction<T>>];
 declare const useStatePromise: UseStatePromise;

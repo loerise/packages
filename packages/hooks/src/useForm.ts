@@ -32,6 +32,7 @@ type FieldConfigs = {
   initialValue?: FieldValue
   placeholder?: string
   eventName?: string
+  destroyEventName?: string
   valueName?: string
   valueKey?: string
   rules?: FieldRule[]
@@ -40,6 +41,7 @@ type FieldConfigs = {
 }
 
 type Validate = () => Promise<FieldValues>
+type UnregisterField = (key: FieldKeyOriginal) => void
 type RegisterField = (key: FieldKeyOriginal, configs?: FieldConfigs) => Record<string, any>
 type GetFieldValue = (key: FieldKeyOriginal) => FieldValue
 type GetFieldsValue = () => FieldValues
@@ -50,25 +52,52 @@ type ResetFields = () => void
 
 type UseFrom = (options?: {
   initialEventName?: "onChange" | "onInput" | "onChangeText" | string
+  initialDestroyEventName?: "onDestroy" | string
   initialValueName?: string
   initialValueKey?: string
 }) => {
-  validate: Validate
-  registerField: RegisterField
-  getFieldValue: GetFieldValue
-  getFieldsValue: GetFieldsValue
-  setFieldValue: SetFieldValue
-  setFieldsValue: SetFieldsValue
   getFieldError: GetFieldError
+  getFieldsValue: GetFieldsValue
+  getFieldValue: GetFieldValue
+  registerField: RegisterField
   resetFields: ResetFields
+  setFieldsValue: SetFieldsValue
+  setFieldValue: SetFieldValue
+  unregisterField: UnregisterField
+  validate: Validate
 }
 
 const isEmpty = R.compose(R.either(R.isNil, R.isEmpty))
+const ensureArrayKey: (key: FieldKeyOriginal) => FieldKeyArray = (key) => {
+  if (isEmpty(key)) {
+    return []
+  } else if (key instanceof Array) {
+    return key
+  } else {
+    return String(key).includes(".") ? String(key).split(".") : [key]
+  }
+}
+const ensureStringKey: (key: FieldKeyOriginal) => string = (key) => {
+  return ensureArrayKey(key).join(".")
+}
+/*
+ * fieldValuesRef 的初始数据类型由 key 来判断
+ * 1、key 是数组且下标 0 的数据是数字，fieldValuesRef 是数组类型
+ * 2、其他情况 fieldValuesRef 是对象类型
+ */
+const ensureValueType: (key: FieldKeyOriginal, value: any) => Record<string, unknown> | [] = (key, value) => {
+  return !isEmpty(value) ? value : isNaN(Number(ensureArrayKey(key)[0])) ? {} : []
+}
 
 export const useForm: UseFrom = (options = {}) => {
   const [, forceUpdate] = useState(0)
 
-  const { initialEventName = "onChange", initialValueName = "value", initialValueKey = "detail" } = options
+  const {
+    initialEventName = "onChange",
+    initialDestroyEventName = "onDestroy",
+    initialValueName = "value",
+    initialValueKey = "detail",
+  } = options
 
   const initialFieldValuesRef = useRef<FieldValues>({})
   const fieldValuesRef = useRef<FieldValues>({})
@@ -76,51 +105,18 @@ export const useForm: UseFrom = (options = {}) => {
   const fieldRulesRef = useRef({})
   const fieldErrorsRef = useRef<FieldError[]>([])
 
-  // 将 key 转为数组
-  const ensureArrayKey: (key: FieldKeyOriginal) => FieldKeyArray = useCallback((key) => {
-    if (isEmpty(key)) {
-      return []
-    } else if (key instanceof Array) {
-      return key
-    } else {
-      return String(key).includes(".") ? String(key).split(".") : [key]
-    }
+  const getFieldValue: GetFieldValue = useCallback((key) => {
+    return R.path(ensureArrayKey(key), fieldValuesRef.current)
   }, [])
-  const ensureStringKey: (key: FieldKeyOriginal) => string = useCallback(
-    (key) => {
-      return ensureArrayKey(key).join(".")
-    },
-    [ensureArrayKey]
-  )
-  /*
-   * fieldValuesRef 的初始数据类型由 key 来判断
-   * 1、key 是数组且下标 0 的数据是数字，fieldValuesRef 是数组类型
-   * 2、其他情况 fieldValuesRef 是对象类型
-   */
-  const ensureValueType: (key: FieldKeyOriginal, value: any) => Record<string, unknown> | [] = useCallback(
-    (key, value) => {
-      return !isEmpty(value) ? value : isNaN(Number(ensureArrayKey(key)[0])) ? {} : []
-    },
-    [ensureArrayKey]
-  )
-  const getFieldValue: GetFieldValue = useCallback(
-    (key) => {
-      return R.path(ensureArrayKey(key), fieldValuesRef.current)
-    },
-    [ensureArrayKey]
-  )
   const getFieldsValue: GetFieldsValue = useCallback(() => {
     return fieldValuesRef.current
   }, [])
-  const setFieldValue: SetFieldValue = useCallback(
-    (key, value) => {
-      const computedValue = ensureValueType(key, fieldValuesRef.current)
+  const setFieldValue: SetFieldValue = useCallback((key, value) => {
+    const computedValue = ensureValueType(key, fieldValuesRef.current)
 
-      fieldValuesRef.current = R.assocPath(ensureArrayKey(key), value, computedValue)
-      forceUpdate(new Date().getTime())
-    },
-    [ensureArrayKey, ensureValueType]
-  )
+    fieldValuesRef.current = R.assocPath(ensureArrayKey(key), value, computedValue)
+    forceUpdate(new Date().getTime())
+  }, [])
   const setFieldsValue: SetFieldsValue = useCallback((value) => {
     fieldValuesRef.current = R.mergeDeepRight(fieldValuesRef.current, value)
     forceUpdate(new Date().getTime())
@@ -130,42 +126,30 @@ export const useForm: UseFrom = (options = {}) => {
     forceUpdate(new Date().getTime())
   }, [])
 
-  const getFieldRules: (key: FieldKeyOriginal) => FieldRule[] = useCallback(
-    (key) => {
-      return R.pathOr([], ensureArrayKey(key), fieldRulesRef.current)
-    },
-    [ensureArrayKey]
-  )
-  const setFieldRules: (key: FieldKeyOriginal, value: FieldRule[]) => void = useCallback(
-    (key, value) => {
-      fieldRulesRef.current = R.assocPath(ensureArrayKey(key), value, fieldRulesRef.current)
-    },
-    [ensureArrayKey]
-  )
+  const getFieldRules: (key: FieldKeyOriginal) => FieldRule[] = useCallback((key) => {
+    return R.pathOr([], ensureArrayKey(key), fieldRulesRef.current)
+  }, [])
+  const setFieldRules: (key: FieldKeyOriginal, value: FieldRule[]) => void = useCallback((key, value) => {
+    fieldRulesRef.current = R.assocPath(ensureArrayKey(key), value, fieldRulesRef.current)
+  }, [])
 
   const getFieldKeys: () => FieldKeys = useCallback(() => {
     return fieldKeysRef.current
   }, [])
-  const setFieldKeys: (key: FieldKeyOriginal) => void = useCallback(
-    (key) => {
-      fieldKeysRef.current.push(ensureStringKey(key))
-    },
-    [ensureStringKey]
-  )
+  const setFieldKeys: (key: FieldKeyOriginal) => void = useCallback((key) => {
+    fieldKeysRef.current.push(ensureStringKey(key))
+  }, [])
 
   const getFieldErrors: () => FieldError[] = useCallback(() => {
     return fieldErrorsRef.current
   }, [])
-  const getFieldError: GetFieldError = useCallback(
-    (key) => {
-      return R.compose(
-        R.propOr("", "message"),
-        R.head,
-        R.filter(R.propEq("key", ensureStringKey(key)))
-      )(fieldErrorsRef.current) as string
-    },
-    [ensureStringKey]
-  )
+  const getFieldError: GetFieldError = useCallback((key) => {
+    return R.compose(
+      R.propOr("", "message"),
+      R.head,
+      R.filter(R.propEq("key", ensureStringKey(key)))
+    )(fieldErrorsRef.current) as string
+  }, [])
   const setFieldError: (key: FieldKeyOriginal, type: RuleType, message: string) => void = useCallback(
     (key, type, message) => {
       const computedKey = ensureStringKey(key)
@@ -179,18 +163,15 @@ export const useForm: UseFrom = (options = {}) => {
         })
       )(fieldErrorsRef.current)
     },
-    [ensureStringKey]
+    []
   )
-  const removeFieldError: (key: FieldKeyOriginal, type: string) => void = useCallback(
-    (key, type) => {
-      const computedKey = ensureStringKey(key)
-      fieldErrorsRef.current = R.reject(
-        R.both(R.propEq("key", computedKey) as any, R.propEq("type", type) as any),
-        fieldErrorsRef.current
-      )
-    },
-    [ensureStringKey]
-  )
+  const removeFieldError: (key: FieldKeyOriginal, type: string) => void = useCallback((key, type) => {
+    const computedKey = ensureStringKey(key)
+    fieldErrorsRef.current = R.reject(
+      R.both(R.propEq("key", computedKey) as any, R.propEq("type", type) as any),
+      fieldErrorsRef.current
+    )
+  }, [])
 
   const validateField: (key: FieldKeyOriginal, value: FieldValue) => void = useCallback(
     (key, value) => {
@@ -331,10 +312,22 @@ export const useForm: UseFrom = (options = {}) => {
       }
     })
   }, [getFieldErrors, getFieldsValue, validateFields])
+  const unregisterField: UnregisterField = useCallback((key) => {
+    fieldKeysRef.current = R.reject(R.equals(ensureStringKey(key)), fieldKeysRef.current)
+    fieldValuesRef.current = R.dissocPath(ensureArrayKey(key), fieldValuesRef.current)
+    fieldRulesRef.current = R.dissocPath(ensureArrayKey(key), fieldRulesRef.current)
+    initialFieldValuesRef.current = R.mergeDeepRight(
+      R.defaultTo({}, initialFieldValuesRef.current),
+      R.dissocPath(ensureArrayKey(key))
+    )
+
+    forceUpdate(new Date().getTime())
+  }, [])
   const registerField: RegisterField = useCallback(
     (key, configs = {}) => {
       const {
         eventName = initialEventName,
+        destroyEventName = initialDestroyEventName,
         valueName = initialValueName,
         valueKey = initialValueKey,
         initialValue,
@@ -370,29 +363,32 @@ export const useForm: UseFrom = (options = {}) => {
       return {
         [valueName]: R.defaultTo(placeholder, getFieldValue(key)),
         [eventName]: handleChange,
+        [destroyEventName]: () => unregisterField(key),
       }
     },
     [
-      ensureArrayKey,
       getFieldValue,
+      initialDestroyEventName,
       initialEventName,
       initialValueKey,
       initialValueName,
       setFieldKeys,
       setFieldRules,
       setFieldValue,
+      unregisterField,
       validateField,
     ]
   )
 
   return {
-    validate,
-    registerField,
-    getFieldValue,
-    getFieldsValue,
-    setFieldValue,
-    setFieldsValue,
     getFieldError,
+    getFieldsValue,
+    getFieldValue,
+    registerField,
     resetFields,
+    setFieldsValue,
+    setFieldValue,
+    unregisterField,
+    validate,
   }
 }
