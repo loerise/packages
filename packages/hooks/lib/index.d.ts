@@ -37,15 +37,15 @@ type FieldConfigs = {
     interceptChange?: <T>(value: T) => boolean;
     interceptValue?: <T>(value: T) => T;
 };
+type GetFieldValue = (key: FieldKeyOriginal) => FieldValue;
+type GetFieldValues = () => FieldValues;
+type SetFieldValue = (key: FieldKeyOriginal, value: FieldValue) => void;
+type SetFieldValues = (value: FieldValues) => void;
+type ResetFieldValues = () => void;
+type GetFieldError = (key: FieldKeyOriginal) => FieldError["message"];
 type Validate = () => Promise<FieldValues>;
 type UnregisterField = (key: FieldKeyOriginal) => void;
 type RegisterField = (key: FieldKeyOriginal, configs?: FieldConfigs) => Record<string, any>;
-type GetFieldValue = (key: FieldKeyOriginal) => FieldValue;
-type GetFieldsValue = () => FieldValues;
-type SetFieldValue = (key: FieldKeyOriginal, value: FieldValue) => void;
-type SetFieldsValue = (value: FieldValues) => void;
-type GetFieldError = (key: FieldKeyOriginal) => FieldError["message"];
-type ResetFields = () => void;
 type UseFrom = (options?: {
     initialEventName?: "onChange" | "onInput" | "onChangeText" | string;
     initialDestroyEventName?: "onDestroy" | string;
@@ -53,11 +53,11 @@ type UseFrom = (options?: {
     initialValueKey?: string;
 }) => {
     getFieldError: GetFieldError;
-    getFieldsValue: GetFieldsValue;
+    getFieldsValue: GetFieldValues;
     getFieldValue: GetFieldValue;
     registerField: RegisterField;
-    resetFields: ResetFields;
-    setFieldsValue: SetFieldsValue;
+    resetFields: ResetFieldValues;
+    setFieldsValue: SetFieldValues;
     setFieldValue: SetFieldValue;
     unregisterField: UnregisterField;
     validate: Validate;

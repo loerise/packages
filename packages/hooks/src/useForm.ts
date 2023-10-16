@@ -40,15 +40,29 @@ type FieldConfigs = {
   interceptValue?: <T>(value: T) => T
 }
 
+type GetFieldValue = (key: FieldKeyOriginal) => FieldValue
+type GetFieldValues = () => FieldValues
+type SetFieldValue = (key: FieldKeyOriginal, value: FieldValue) => void
+type SetFieldValues = (value: FieldValues) => void
+type ResetFieldValues = () => void
+
+type GetFieldRules = (key: FieldKeyOriginal) => FieldRule[]
+type SetFieldRules = (key: FieldKeyOriginal, value: FieldRule[]) => void
+
+type GetFieldKeys = () => FieldKeys
+type SetFieldKeys = (key: FieldKeyOriginal) => void
+
+type GetFieldErrors = () => FieldError[]
+type ResetFieldErrors = () => void
+type GetFieldError = (key: FieldKeyOriginal) => FieldError["message"]
+type SetFieldError = (key: FieldKeyOriginal, type: RuleType, message: string) => void
+type RemoveFieldError = (key: FieldKeyOriginal, type: string) => void
+
+type ValidateField = (key: FieldKeyOriginal, value: FieldValue) => void
+type ValidateFields = () => void
 type Validate = () => Promise<FieldValues>
 type UnregisterField = (key: FieldKeyOriginal) => void
 type RegisterField = (key: FieldKeyOriginal, configs?: FieldConfigs) => Record<string, any>
-type GetFieldValue = (key: FieldKeyOriginal) => FieldValue
-type GetFieldsValue = () => FieldValues
-type SetFieldValue = (key: FieldKeyOriginal, value: FieldValue) => void
-type SetFieldsValue = (value: FieldValues) => void
-type GetFieldError = (key: FieldKeyOriginal) => FieldError["message"]
-type ResetFields = () => void
 
 type UseFrom = (options?: {
   initialEventName?: "onChange" | "onInput" | "onChangeText" | string
@@ -57,11 +71,11 @@ type UseFrom = (options?: {
   initialValueKey?: string
 }) => {
   getFieldError: GetFieldError
-  getFieldsValue: GetFieldsValue
+  getFieldsValue: GetFieldValues
   getFieldValue: GetFieldValue
   registerField: RegisterField
-  resetFields: ResetFields
-  setFieldsValue: SetFieldsValue
+  resetFields: ResetFieldValues
+  setFieldsValue: SetFieldValues
   setFieldValue: SetFieldValue
   unregisterField: UnregisterField
   validate: Validate
@@ -108,7 +122,7 @@ export const useForm: UseFrom = (options = {}) => {
   const getFieldValue: GetFieldValue = useCallback((key) => {
     return R.path(ensureArrayKey(key), fieldValuesRef.current)
   }, [])
-  const getFieldsValue: GetFieldsValue = useCallback(() => {
+  const getFieldValues: GetFieldValues = useCallback(() => {
     return fieldValuesRef.current
   }, [])
   const setFieldValue: SetFieldValue = useCallback((key, value) => {
@@ -117,31 +131,34 @@ export const useForm: UseFrom = (options = {}) => {
     fieldValuesRef.current = R.assocPath(ensureArrayKey(key), value, computedValue)
     forceUpdate(new Date().getTime())
   }, [])
-  const setFieldsValue: SetFieldsValue = useCallback((value) => {
+  const setFieldValues: SetFieldValues = useCallback((value) => {
     fieldValuesRef.current = R.mergeDeepRight(fieldValuesRef.current, value)
     forceUpdate(new Date().getTime())
   }, [])
-  const resetFields: ResetFields = useCallback(() => {
+  const resetFieldValues: ResetFieldValues = useCallback(() => {
     fieldValuesRef.current = R.clone(initialFieldValuesRef.current)
     forceUpdate(new Date().getTime())
   }, [])
 
-  const getFieldRules: (key: FieldKeyOriginal) => FieldRule[] = useCallback((key) => {
+  const getFieldRules: GetFieldRules = useCallback((key) => {
     return R.pathOr([], ensureArrayKey(key), fieldRulesRef.current)
   }, [])
-  const setFieldRules: (key: FieldKeyOriginal, value: FieldRule[]) => void = useCallback((key, value) => {
+  const setFieldRules: SetFieldRules = useCallback((key, value) => {
     fieldRulesRef.current = R.assocPath(ensureArrayKey(key), value, fieldRulesRef.current)
   }, [])
 
-  const getFieldKeys: () => FieldKeys = useCallback(() => {
+  const getFieldKeys: GetFieldKeys = useCallback(() => {
     return fieldKeysRef.current
   }, [])
-  const setFieldKeys: (key: FieldKeyOriginal) => void = useCallback((key) => {
+  const setFieldKeys: SetFieldKeys = useCallback((key) => {
     fieldKeysRef.current.push(ensureStringKey(key))
   }, [])
 
-  const getFieldErrors: () => FieldError[] = useCallback(() => {
+  const getFieldErrors: GetFieldErrors = useCallback(() => {
     return fieldErrorsRef.current
+  }, [])
+  const resetFieldErrors: ResetFieldErrors = useCallback(() => {
+    fieldErrorsRef.current = []
   }, [])
   const getFieldError: GetFieldError = useCallback((key) => {
     return R.compose(
@@ -150,22 +167,19 @@ export const useForm: UseFrom = (options = {}) => {
       R.filter(R.propEq("key", ensureStringKey(key)))
     )(fieldErrorsRef.current) as string
   }, [])
-  const setFieldError: (key: FieldKeyOriginal, type: RuleType, message: string) => void = useCallback(
-    (key, type, message) => {
-      const computedKey = ensureStringKey(key)
+  const setFieldError: SetFieldError = useCallback((key, type, message) => {
+    const computedKey = ensureStringKey(key)
 
-      fieldErrorsRef.current = R.compose(
-        R.uniq,
-        R.prepend({
-          key: computedKey,
-          type,
-          message,
-        })
-      )(fieldErrorsRef.current)
-    },
-    []
-  )
-  const removeFieldError: (key: FieldKeyOriginal, type: string) => void = useCallback((key, type) => {
+    fieldErrorsRef.current = R.compose(
+      R.uniq,
+      R.prepend({
+        key: computedKey,
+        type,
+        message,
+      })
+    )(fieldErrorsRef.current)
+  }, [])
+  const removeFieldError: RemoveFieldError = useCallback((key, type) => {
     const computedKey = ensureStringKey(key)
     fieldErrorsRef.current = R.reject(
       R.both(R.propEq("key", computedKey) as any, R.propEq("type", type) as any),
@@ -173,10 +187,9 @@ export const useForm: UseFrom = (options = {}) => {
     )
   }, [])
 
-  const validateField: (key: FieldKeyOriginal, value: FieldValue) => void = useCallback(
+  const validateField: ValidateField = useCallback(
     (key, value) => {
       const rules = getFieldRules(key)
-
       if (isEmpty(rules)) return
 
       R.forEach((rule) => {
@@ -294,11 +307,12 @@ export const useForm: UseFrom = (options = {}) => {
     },
     [getFieldRules, removeFieldError, setFieldError]
   )
-  const validateFields = useCallback(() => {
+  const validateFields: ValidateFields = useCallback(() => {
+    resetFieldErrors()
     R.map((key) => {
       validateField(key, getFieldValue(key))
     }, getFieldKeys())
-  }, [getFieldKeys, getFieldValue, validateField])
+  }, [resetFieldErrors, getFieldKeys, getFieldValue, validateField])
   const validate: Validate = useCallback(() => {
     validateFields()
 
@@ -306,12 +320,12 @@ export const useForm: UseFrom = (options = {}) => {
       const errors = getFieldErrors()
 
       if (isEmpty(errors)) {
-        resolve(getFieldsValue())
+        resolve(getFieldValues())
       } else {
         reject(errors)
       }
     })
-  }, [getFieldErrors, getFieldsValue, validateFields])
+  }, [getFieldErrors, getFieldValues, validateFields])
   const unregisterField: UnregisterField = useCallback((key) => {
     fieldKeysRef.current = R.reject(R.equals(ensureStringKey(key)), fieldKeysRef.current)
     fieldValuesRef.current = R.dissocPath(ensureArrayKey(key), fieldValuesRef.current)
@@ -382,11 +396,11 @@ export const useForm: UseFrom = (options = {}) => {
 
   return {
     getFieldError,
-    getFieldsValue,
+    getFieldsValue: getFieldValues,
     getFieldValue,
     registerField,
-    resetFields,
-    setFieldsValue,
+    resetFields: resetFieldValues,
+    setFieldsValue: setFieldValues,
     setFieldValue,
     unregisterField,
     validate,
