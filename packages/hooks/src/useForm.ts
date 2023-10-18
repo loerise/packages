@@ -71,11 +71,11 @@ type UseFrom = (options?: {
   initialValueKey?: string
 }) => {
   getFieldError: GetFieldError
-  getFieldsValue: GetFieldValues
+  getFieldValues: GetFieldValues
   getFieldValue: GetFieldValue
   registerField: RegisterField
-  resetFields: ResetFieldValues
-  setFieldsValue: SetFieldValues
+  resetFieldValues: ResetFieldValues
+  setFieldValues: SetFieldValues
   setFieldValue: SetFieldValue
   unregisterField: UnregisterField
   validate: Validate
@@ -396,11 +396,11 @@ export const useForm: UseFrom = (options = {}) => {
 
   return {
     getFieldError,
-    getFieldsValue: getFieldValues,
+    getFieldValues,
     getFieldValue,
     registerField,
-    resetFields: resetFieldValues,
-    setFieldsValue: setFieldValues,
+    resetFieldValues,
+    setFieldValues,
     setFieldValue,
     unregisterField,
     validate,

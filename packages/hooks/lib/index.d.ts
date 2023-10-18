@@ -53,11 +53,11 @@ type UseFrom = (options?: {
     initialValueKey?: string;
 }) => {
     getFieldError: GetFieldError;
-    getFieldsValue: GetFieldValues;
+    getFieldValues: GetFieldValues;
     getFieldValue: GetFieldValue;
     registerField: RegisterField;
-    resetFields: ResetFieldValues;
-    setFieldsValue: SetFieldValues;
+    resetFieldValues: ResetFieldValues;
+    setFieldValues: SetFieldValues;
     setFieldValue: SetFieldValue;
     unregisterField: UnregisterField;
     validate: Validate;

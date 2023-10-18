@@ -5,97 +5,97 @@ import { useForm } from "../src"
 describe("useForm", () => {
   it("test form on init", async () => {
     const hook = renderHook(() => useForm())
-    const { getFieldsValue } = hook.result.current
+    const { getFieldValues } = hook.result.current
 
-    expect(getFieldsValue()).toEqual({})
+    expect(getFieldValues()).toEqual({})
   })
 
   it("test form on unregister field", async () => {
     const hook = renderHook(() => useForm())
-    const { registerField, unregisterField, getFieldsValue } = hook.result.current
+    const { registerField, unregisterField, getFieldValues } = hook.result.current
 
     act(() => {
       registerField("a", { initialValue: 1 })
       registerField("b", { initialValue: 2 })
     })
-    await waitFor(() => expect(getFieldsValue()).toEqual({ a: 1, b: 2 }))
+    await waitFor(() => expect(getFieldValues()).toEqual({ a: 1, b: 2 }))
 
     act(() => {
       unregisterField("a")
     })
-    await waitFor(() => expect(getFieldsValue()).toEqual({ b: 2 }))
+    await waitFor(() => expect(getFieldValues()).toEqual({ b: 2 }))
 
     act(() => {
       unregisterField("b")
     })
-    await waitFor(() => expect(getFieldsValue()).toEqual({}))
+    await waitFor(() => expect(getFieldValues()).toEqual({}))
   })
 
   it("test form key:string", async () => {
     const hook = renderHook(() => useForm())
-    const { registerField, getFieldsValue, setFieldValue, setFieldsValue, resetFields } = hook.result.current
+    const { registerField, getFieldValues, setFieldValue, setFieldValues, resetFieldValues } = hook.result.current
 
-    expect(getFieldsValue()).toEqual({})
+    expect(getFieldValues()).toEqual({})
 
     act(() => {
       registerField("a", { initialValue: 1 })
     })
-    await waitFor(() => expect(getFieldsValue()).toEqual({ a: 1 }))
+    await waitFor(() => expect(getFieldValues()).toEqual({ a: 1 }))
 
     act(() => setFieldValue("a", 2))
-    await waitFor(() => expect(getFieldsValue()).toEqual({ a: 2 }))
+    await waitFor(() => expect(getFieldValues()).toEqual({ a: 2 }))
 
-    act(() => setFieldsValue({ a: 2, b: 3 }))
-    await waitFor(() => expect(getFieldsValue()).toEqual({ a: 2, b: 3 }))
+    act(() => setFieldValues({ a: 2, b: 3 }))
+    await waitFor(() => expect(getFieldValues()).toEqual({ a: 2, b: 3 }))
 
-    act(() => resetFields())
-    await waitFor(() => expect(getFieldsValue()).toEqual({}))
+    act(() => resetFieldValues())
+    await waitFor(() => expect(getFieldValues()).toEqual({}))
   })
 
   it("test form key:array", async () => {
     const hook = renderHook(() => useForm())
-    const { registerField, getFieldsValue, setFieldValue, resetFields } = hook.result.current
+    const { registerField, getFieldValues, setFieldValue, resetFieldValues } = hook.result.current
 
     act(() => {
       registerField(["a", "b", 0, "c"])
     })
-    await waitFor(() => expect(getFieldsValue()).toEqual({ a: { b: [{ c: null }] } }))
+    await waitFor(() => expect(getFieldValues()).toEqual({ a: { b: [{ c: null }] } }))
 
     act(() => setFieldValue(["a", "b", 0, "c"], 1))
-    await waitFor(() => expect(getFieldsValue()).toEqual({ a: { b: [{ c: 1 }] } }))
+    await waitFor(() => expect(getFieldValues()).toEqual({ a: { b: [{ c: 1 }] } }))
 
-    act(() => resetFields())
-    await waitFor(() => expect(getFieldsValue()).toEqual({}))
+    act(() => resetFieldValues())
+    await waitFor(() => expect(getFieldValues()).toEqual({}))
 
     act(() => registerField([0, "a", "b", "c"]))
-    await waitFor(() => expect(getFieldsValue()).toEqual([{ a: { b: { c: null } } }]))
+    await waitFor(() => expect(getFieldValues()).toEqual([{ a: { b: { c: null } } }]))
 
     act(() => setFieldValue([0, "a", "b", "c"], 1))
-    await waitFor(() => expect(getFieldsValue()).toEqual([{ a: { b: { c: 1 } } }]))
+    await waitFor(() => expect(getFieldValues()).toEqual([{ a: { b: { c: 1 } } }]))
 
     act(() => setFieldValue([1, "a", "b", "c"], 2))
-    await waitFor(() => expect(getFieldsValue()).toEqual([{ a: { b: { c: 1 } } }, { a: { b: { c: 2 } } }]))
+    await waitFor(() => expect(getFieldValues()).toEqual([{ a: { b: { c: 1 } } }, { a: { b: { c: 2 } } }]))
 
     act(() => registerField([2, "a", "b", "c"]))
     await waitFor(() =>
-      expect(getFieldsValue()).toEqual([{ a: { b: { c: 1 } } }, { a: { b: { c: 2 } } }, { a: { b: { c: null } } }])
+      expect(getFieldValues()).toEqual([{ a: { b: { c: 1 } } }, { a: { b: { c: 2 } } }, { a: { b: { c: null } } }])
     )
 
     act(() => setFieldValue([2, "a", "b", "c"], 3))
     await waitFor(() =>
-      expect(getFieldsValue()).toEqual([{ a: { b: { c: 1 } } }, { a: { b: { c: 2 } } }, { a: { b: { c: 3 } } }])
+      expect(getFieldValues()).toEqual([{ a: { b: { c: 1 } } }, { a: { b: { c: 2 } } }, { a: { b: { c: 3 } } }])
     )
   })
 
   it("test form key:mixed", async () => {
     const hook = renderHook(() => useForm())
-    const { registerField, getFieldsValue, setFieldValue } = hook.result.current
+    const { registerField, getFieldValues, setFieldValue } = hook.result.current
 
     act(() => registerField(["a", "b"]))
-    await waitFor(() => expect(getFieldsValue()).toEqual({ a: { b: null } }))
+    await waitFor(() => expect(getFieldValues()).toEqual({ a: { b: null } }))
 
     act(() => setFieldValue(["a", "b", "c", 0], 1))
-    await waitFor(() => expect(getFieldsValue()).toEqual({ a: { b: { c: [1] } } }))
+    await waitFor(() => expect(getFieldValues()).toEqual({ a: { b: { c: [1] } } }))
   })
 
   it("test form rule:required", async () => {
