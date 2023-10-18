@@ -31,6 +31,7 @@ type FieldConfigs = {
     placeholder?: string;
     eventName?: string;
     destroyEventName?: string;
+    destroyOnUnmount?: boolean;
     valueName?: string;
     valueKey?: string;
     rules?: FieldRule[];
@@ -44,11 +45,12 @@ type SetFieldValues = (value: FieldValues) => void;
 type ResetFieldValues = () => void;
 type GetFieldError = (key: FieldKeyOriginal) => FieldError["message"];
 type Validate = () => Promise<FieldValues>;
-type UnregisterField = (key: FieldKeyOriginal) => void;
+type UnregisterField = (key: FieldKeyOriginal, destroyOnUnmount?: boolean) => void;
 type RegisterField = (key: FieldKeyOriginal, configs?: FieldConfigs) => Record<string, any>;
 type UseFrom = (options?: {
     initialEventName?: "onChange" | "onInput" | "onChangeText" | string;
     initialDestroyEventName?: "onDestroy" | string;
+    initialDestroyOnUnmount?: boolean;
     initialValueName?: string;
     initialValueKey?: string;
 }) => {

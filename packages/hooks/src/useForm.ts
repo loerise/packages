@@ -33,6 +33,7 @@ type FieldConfigs = {
   placeholder?: string
   eventName?: string
   destroyEventName?: string
+  destroyOnUnmount?: boolean
   valueName?: string
   valueKey?: string
   rules?: FieldRule[]
@@ -61,12 +62,13 @@ type RemoveFieldError = (key: FieldKeyOriginal, type: string) => void
 type ValidateField = (key: FieldKeyOriginal, value: FieldValue) => void
 type ValidateFields = () => void
 type Validate = () => Promise<FieldValues>
-type UnregisterField = (key: FieldKeyOriginal) => void
+type UnregisterField = (key: FieldKeyOriginal, destroyOnUnmount?: boolean) => void
 type RegisterField = (key: FieldKeyOriginal, configs?: FieldConfigs) => Record<string, any>
 
 type UseFrom = (options?: {
   initialEventName?: "onChange" | "onInput" | "onChangeText" | string
   initialDestroyEventName?: "onDestroy" | string
+  initialDestroyOnUnmount?: boolean
   initialValueName?: string
   initialValueKey?: string
 }) => {
@@ -109,6 +111,7 @@ export const useForm: UseFrom = (options = {}) => {
   const {
     initialEventName = "onChange",
     initialDestroyEventName = "onDestroy",
+    initialDestroyOnUnmount = true,
     initialValueName = "value",
     initialValueKey = "detail",
   } = options
@@ -326,9 +329,9 @@ export const useForm: UseFrom = (options = {}) => {
       }
     })
   }, [getFieldErrors, getFieldValues, validateFields])
-  const unregisterField: UnregisterField = useCallback((key) => {
+  const unregisterField: UnregisterField = useCallback((key, destroyOnUnmount = initialDestroyOnUnmount) => {
+    if (destroyOnUnmount) fieldValuesRef.current = R.dissocPath(ensureArrayKey(key), fieldValuesRef.current)
     fieldKeysRef.current = R.reject(R.equals(ensureStringKey(key)), fieldKeysRef.current)
-    fieldValuesRef.current = R.dissocPath(ensureArrayKey(key), fieldValuesRef.current)
     fieldRulesRef.current = R.dissocPath(ensureArrayKey(key), fieldRulesRef.current)
     initialFieldValuesRef.current = R.mergeDeepRight(
       R.defaultTo({}, initialFieldValuesRef.current),
@@ -342,6 +345,7 @@ export const useForm: UseFrom = (options = {}) => {
       const {
         eventName = initialEventName,
         destroyEventName = initialDestroyEventName,
+        destroyOnUnmount = initialDestroyOnUnmount,
         valueName = initialValueName,
         valueKey = initialValueKey,
         initialValue,
@@ -377,12 +381,13 @@ export const useForm: UseFrom = (options = {}) => {
       return {
         [valueName]: R.defaultTo(placeholder, getFieldValue(key)),
         [eventName]: handleChange,
-        [destroyEventName]: () => unregisterField(key),
+        [destroyEventName]: () => unregisterField(key, destroyOnUnmount),
       }
     },
     [
       getFieldValue,
       initialDestroyEventName,
+      initialDestroyOnUnmount,
       initialEventName,
       initialValueKey,
       initialValueName,
