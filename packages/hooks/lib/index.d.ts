@@ -34,8 +34,8 @@ type FieldConfigs = {
     valueName?: string;
     valueKey?: string;
     rules?: FieldRule[];
-    interceptChange?: <T>(value: T) => boolean;
-    interceptValue?: <T>(value: T) => T;
+    interceptChange?: (value: FieldValue) => boolean;
+    interceptValue?: (value: FieldValue) => FieldValue;
 };
 type GetFieldValue = (key: FieldKeyOriginal) => FieldValue;
 type GetFieldValues = () => FieldValues;
