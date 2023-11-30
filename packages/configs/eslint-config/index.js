@@ -11,7 +11,7 @@ module.exports = {
     "plugin:tailwindcss/recommended",
     "prettier",
   ],
-  plugins: ["@typescript-eslint", "ramda"],
+  plugins: ["@typescript-eslint", "prettier", "ramda"],
   parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaVersion: "latest",
