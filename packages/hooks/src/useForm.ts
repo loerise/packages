@@ -113,7 +113,7 @@ export const useForm: UseFrom = (options = {}) => {
     initialDestroyEventName = "onDestroy",
     initialDestroyOnUnmount = true,
     initialValueName = "value",
-    initialValueKey = "detail",
+    initialValueKey = "",
   } = options
 
   const initialFieldValuesRef = useRef<FieldValues>({})
@@ -339,7 +339,7 @@ export const useForm: UseFrom = (options = {}) => {
     )
 
     forceUpdate(new Date().getTime())
-  }, [])
+  }, [initialDestroyOnUnmount])
   const registerField: RegisterField = useCallback(
     (key, configs = {}) => {
       const {
