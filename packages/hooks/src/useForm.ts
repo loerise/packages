@@ -280,7 +280,7 @@ export const useForm: UseFrom = (options = {}) => {
           case "licensePlate":
             if (
               !isEmpty(value) &&
-              !/^[京津沪渝冀晋辽吉黑苏浙皖川闽赣鲁豫鄂湘粤琼黔滇陕甘青台蒙桂藏宁新领使临][A-HJ-NP-Z][A-HJ-NP-Z0-9]{4,5}[A-HJ-NP-Z0-9挂学警港澳]$/.test(
+              !/^[京津沪渝冀晋辽吉黑苏浙皖川闽赣鲁豫鄂湘粤琼贵云陕甘青蒙桂藏宁新港澳台领使临][A-HJ-NP-Z][A-HJ-NP-Z0-9]{4,5}[A-HJ-NP-Z0-9挂学警港澳台领使]$/.test(
                 String(value)
               )
             ) {
