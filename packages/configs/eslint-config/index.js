@@ -1,6 +1,5 @@
 module.exports = {
   extends: [
-    "@unocss",
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:import/recommended",
@@ -9,7 +8,6 @@ module.exports = {
     "plugin:react-directives/recommended",
     "plugin:react-hooks/recommended",
     "plugin:react/recommended",
-    "plugin:tailwindcss/recommended",
     "prettier",
   ],
   plugins: ["@typescript-eslint", "prettier", "ramda", "unused-imports"],
@@ -135,10 +133,6 @@ module.exports = {
             ignoreMemberSort: false,
           },
         ],
-        "tailwindcss/classnames-order": "warn",
-        "tailwindcss/enforces-negative-arbitrary-values": "error",
-        "tailwindcss/no-contradicting-classname": "error",
-        "tailwindcss/no-custom-classname": "off",
         "unused-imports/no-unused-imports": "warn",
         "unused-imports/no-unused-vars": "warn",
       },
