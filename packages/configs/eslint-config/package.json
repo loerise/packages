@@ -1,6 +1,6 @@
 {
   "name": "@loerise/eslint-config",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "the eslint config by loerise",
   "main": "index.js",
   "author": "Lester Lau",
